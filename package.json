@@ -1,0 +1,14 @@
+{
+  "name": "crackmect-api",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "hono": "^4.0.0"
+  },
+  "devDependencies": {
+    "@hono/node-server": "^1.8.0"
+  }
+}

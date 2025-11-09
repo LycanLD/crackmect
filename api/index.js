@@ -1,9 +1,8 @@
 // /api/index.js
+import { Hono } from 'hono';
+import { serve } from '@hono/node-server'; // This line is optional for Vercel but good for local dev
 
-const express = require('express');
-const app = express();
-
-// 1. The payload object remains the same
+// 1. The payload object is identical
 const payload = {
   status: true,
   data: {
@@ -26,7 +25,7 @@ const payload = {
   }
 };
 
-// 2. The makeHeaders function also remains the same
+// 2. The makeHeaders function is also identical
 function makeHeaders(jsonString) {
   return {
     "Connection": "Keep-Alive",
@@ -40,22 +39,18 @@ function makeHeaders(jsonString) {
   };
 }
 
-// 3. Define the route for the "/getcect" path
-app.get('/getcect', (req, res) => {
+// 3. Initialize the Hono app
+const app = new Hono();
+
+// 4. Define the route - this looks very clean and familiar!
+app.get('/getcect', (c) => {
   const jsonString = JSON.stringify(payload, null, 4);
   const headers = makeHeaders(jsonString);
 
-  // Set all the custom headers using res.set()
-  res.set(headers);
-
-  // Send the response with a 200 status code
-  res.status(200).send(jsonString);
+  // Set headers and return the response
+  // Hono's `c` (Context) object works much like a Worker's `fetch` environment
+  return new Response(jsonString, { status: 200, headers });
 });
 
-// 4. Add a catch-all handler for other paths to return a 404
-app.use((req, res) => {
-  res.status(404).send("Not Found");
-});
-
-// 5. Export the Express app for Vercel
-module.exports = app;
+// 5. Export the default handler for Vercel
+export default app;
