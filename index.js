@@ -27,8 +27,8 @@ const payloadadmiral = {
 const payloadash = {
   "status": true,
   "data": {
-    "real": "CODMKR-CODMKR-Fp8OKvN7gm-CODMKR-Fp8OKvN7gm-LenovoTB-9707F-Xiaomi-16-Vm8Lk7Uj2JmsjCPVPVjrLa7zgfx3uz9E",
-    "token": "0b87b2e53d03c6a69646c15ef354ee1d",
+    "real": "CRACKED-BY-LYC4N",
+    "token": "ABC123",
     "modname": "Safe Working",
     "mod_status": "Safe",
     "credit": "Cracked by Lyc4n! ^w^",
