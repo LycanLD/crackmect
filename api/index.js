@@ -1,4 +1,9 @@
-// server.js
+// /api/index.js
+
+const express = require('express');
+const app = express();
+
+// 1. The payload object remains the same
 const payload = {
   status: true,
   data: {
@@ -21,6 +26,7 @@ const payload = {
   }
 };
 
+// 2. The makeHeaders function also remains the same
 function makeHeaders(jsonString) {
   return {
     "Connection": "Keep-Alive",
@@ -30,23 +36,26 @@ function makeHeaders(jsonString) {
     "Content-Type": "application/json; charset=UTF-8",
     "Content-Length": String(Buffer.byteLength(jsonString, "utf8")),
     "Vary": "User-Agent",
-    // Alt-Svc is not typically required but included to match your sample
     "Alt-Svc": 'h3=":443"; ma=2592000, h3-29=":443"; ma=2592000, h3-Q050=":443"; ma=2592000',
-    // Note: Cloudflare may override or omit some server-level headers (like `Server`)
   };
 }
 
-export default {
-  async fetch(request, env, ctx) {
-    const url = new URL(request.url);
+// 3. Define the route for the "/getcect" path
+app.get('/getcect', (req, res) => {
+  const jsonString = JSON.stringify(payload, null, 4);
+  const headers = makeHeaders(jsonString);
 
-    if (url.pathname === "/getcect") {
-      const jsonString = JSON.stringify(payload, null, 4);
-      const headers = makeHeaders(jsonString);
-      return new Response(jsonString, { status: 200, headers });
-    }
+  // Set all the custom headers using res.set()
+  res.set(headers);
 
-    // For other paths, return 404 (or change behavior as needed)
-    return new Response("Not Found", { status: 404 });
-  }
-};
+  // Send the response with a 200 status code
+  res.status(200).send(jsonString);
+});
+
+// 4. Add a catch-all handler for other paths to return a 404
+app.use((req, res) => {
+  res.status(404).send("Not Found");
+});
+
+// 5. Export the Express app for Vercel
+module.exports = app;
