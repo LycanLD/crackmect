@@ -1,8 +1,7 @@
 // /api/index.js
 import { Hono } from 'hono';
-import { serve } from '@hono/node-server'; // This line is optional for Vercel but good for local dev
 
-// 1. The payload object is identical
+// The payload object is identical to your original Worker
 const payload = {
   status: true,
   data: {
@@ -25,7 +24,7 @@ const payload = {
   }
 };
 
-// 2. The makeHeaders function is also identical
+// The makeHeaders function is also identical
 function makeHeaders(jsonString) {
   return {
     "Connection": "Keep-Alive",
@@ -39,18 +38,16 @@ function makeHeaders(jsonString) {
   };
 }
 
-// 3. Initialize the Hono app
+// Initialize the Hono app
 const app = new Hono();
 
-// 4. Define the route - this looks very clean and familiar!
-app.get('/getcect', (c) => {
+// Use app.all() to handle ALL HTTP methods (GET, POST, etc.)
+app.all('/getcect', (c) => {
   const jsonString = JSON.stringify(payload, null, 4);
   const headers = makeHeaders(jsonString);
 
-  // Set headers and return the response
-  // Hono's `c` (Context) object works much like a Worker's `fetch` environment
   return new Response(jsonString, { status: 200, headers });
 });
 
-// 5. Export the default handler for Vercel
+// Export the default handler for Vercel
 export default app;
