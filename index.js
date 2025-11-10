@@ -71,7 +71,7 @@ app.all('/getcect', (c) => {
   return new Response(jsonString, { status: 200, headers });
 });
 
-app.all('/getceect', (c) => {
+app.all('/getect', (c) => {
   const jsonString = JSON.stringify(payloadadmiral, null, 4);
   const headers = makeHeaders(jsonString);
 
