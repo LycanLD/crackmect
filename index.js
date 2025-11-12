@@ -45,6 +45,19 @@ const payloadash = {
     "rng": 1862691471
   }
 };
+const payloadtnv = {
+  "status": true,
+  "data": {
+  "message": "TNK-Mod - Cracked by Lyc4nLĐ",
+  "status": "active"
+}
+};
+const payloadtna = {
+  "message": "VIP login thành công - Cracked by Lyc4n",
+  "status": "vip",
+  "activated": true
+}
+};
 
 // The makeHeaders function is also identical
 function makeHeaders(jsonString) {
@@ -80,6 +93,18 @@ app.all('/getect', (c) => {
 
 app.all('/getct', (c) => {
   const jsonString = JSON.stringify(payloadash, null, 4);
+  const headers = makeHeaders(jsonString);
+
+  return new Response(jsonString, { status: 200, headers });
+});
+app.all('/tna', (c) => {
+  const jsonString = JSON.stringify(payloadtna, null, 4);
+  const headers = makeHeaders(jsonString);
+
+  return new Response(jsonString, { status: 200, headers });
+});
+app.all('/tnv', (c) => {
+  const jsonString = JSON.stringify(payloadtnv, null, 4);
   const headers = makeHeaders(jsonString);
 
   return new Response(jsonString, { status: 200, headers });
