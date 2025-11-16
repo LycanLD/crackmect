@@ -1,8 +1,13 @@
 import Fastify from 'fastify';
+import fastifyServerless from '@fastify/serverless-http';
 
 const fastify = Fastify({
   logger: false
 });
+
+// ======================
+//       PAYLOADS
+// ======================
 
 const payloadadmiral = {
   status: true,
@@ -62,6 +67,10 @@ const payloadtna = {
   activated: true
 };
 
+// ======================
+//       HELPERS
+// ======================
+
 function makeHeaders(jsonString) {
   return {
     "Connection": "Keep-Alive",
@@ -78,32 +87,32 @@ function makeHeaders(jsonString) {
 function sendPayload(reply, payload) {
   const json = JSON.stringify(payload, null, 4);
   reply
-    .code(200)
     .headers(makeHeaders(json))
     .send(json);
 }
 
-// =========================
+// ======================
 //        ROUTES
-// =========================
+// ======================
 
 fastify.get('/getcect', (req, reply) => sendPayload(reply, payloadadmiral));
 fastify.get('/getect', (req, reply) => sendPayload(reply, payloadadmiral));
 fastify.get('/getct',  (req, reply) => sendPayload(reply, payloadash));
-fastify.get('/tna',    (req, reply) => reply.send(JSON.stringify(payloadtna, null, 4)));
+fastify.get('/tna',    (req, reply) => {
+  const json = JSON.stringify(payloadtna, null, 4);
+  reply.headers(makeHeaders(json)).send(json);
+});
 fastify.get('/tnv',    (req, reply) => sendPayload(reply, payloadtnv));
 
-// 404 handler
+// 404
 fastify.setNotFoundHandler((req, reply) => {
   reply.code(404).send({ error: "Not found" });
 });
 
-// =========================
-//      START SERVER
-// =========================
+// ======================
+//   EXPORT HANDLER FOR VERCEL
+// ======================
 
-fastify.listen({ port: 3000 }, (err, address) => {
-  if (err) throw err;
-  console.log(`API running at ${address}`);
-});
+const handler = fastifyServerless(fastify);
 
+export default handler;

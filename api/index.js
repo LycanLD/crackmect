@@ -1,9 +1,15 @@
-// /api/index.js
-import { Hono } from 'hono';
-import { serve } from '@hono/node-server'; // This line is optional for Vercel but good for local dev
+import Fastify from 'fastify';
+import fastifyServerless from '@fastify/serverless-http';
 
-// 1. The payload object is identical
-const payload = {
+const fastify = Fastify({
+  logger: false
+});
+
+// ======================
+//       PAYLOADS
+// ======================
+
+const payloadadmiral = {
   status: true,
   data: {
     real: "CODM-ADMIRAL-FREE-MOD-bf59783cef2feba7c25498b8570c450a-Vm8Lk7Uj2JmsjCPVPVjrLa7zgfx3uz9E",
@@ -12,20 +18,59 @@ const payload = {
     mod_status: "Safe",
     credit: "Cracked by Lyc4n",
     ESP: true,
-    Item: false,
-    AIM: false,
-    SilentAim: false,
-    BulletTrack: false,
-    Floating: false,
-    Memory: false,
-    Setting: false,
+    Item: true,
+    AIM: true,
+    SilentAim: true,
+    BulletTrack: true,
+    Floating: true,
+    Memory: true,
+    Setting: true,
     EXP: "2090-11-09 24:60:60",
     device: "50",
     rng: 1862609543
   }
 };
 
-// 2. The makeHeaders function is also identical
+const payloadash = {
+  status: true,
+  data: {
+    real: "CRACKED-BY-LYC4N",
+    token: "ABC123",
+    modname: "Safe Working",
+    mod_status: "Safe",
+    credit: "Cracked by Lyc4n! ^w^",
+    ESP: "off",
+    Item: "on",
+    AIM: "on",
+    SilentAim: "on",
+    BulletTrack: "on",
+    Floating: "on",
+    Memory: "on",
+    Setting: "on",
+    device: "99999",
+    ZEROEXP: "2090-12-31 20:29:35",
+    rng: 1862691471
+  }
+};
+
+const payloadtnv = {
+  status: true,
+  data: {
+    message: "TNK-Mod - Cracked by Lyc4nLĐ",
+    status: "active"
+  }
+};
+
+const payloadtna = {
+  message: "VIP login thành công - Cracked by Lyc4n",
+  status: "vip",
+  activated: true
+};
+
+// ======================
+//       HELPERS
+// ======================
+
 function makeHeaders(jsonString) {
   return {
     "Connection": "Keep-Alive",
@@ -33,24 +78,41 @@ function makeHeaders(jsonString) {
     "X-Powered-By": "PHP/7.4.33",
     "Cache-Control": "no-store, max-age=0, no-cache",
     "Content-Type": "application/json; charset=UTF-8",
-    "Content-Length": String(Buffer.byteLength(jsonString, "utf8")),
+    "Content-Length": Buffer.byteLength(jsonString).toString(),
     "Vary": "User-Agent",
-    "Alt-Svc": 'h3=":443"; ma=2592000, h3-29=":443"; ma=2592000, h3-Q050=":443"; ma=2592000',
+    "Alt-Svc": 'h3=":443"; ma=2592000, h3-29=":443"; ma=2592000, h3-Q050=":443"; ma=2592000'
   };
 }
 
-// 3. Initialize the Hono app
-const app = new Hono();
+function sendPayload(reply, payload) {
+  const json = JSON.stringify(payload, null, 4);
+  reply
+    .headers(makeHeaders(json))
+    .send(json);
+}
 
-// 4. Define the route - this looks very clean and familiar!
-app.get('/getcect', (c) => {
-  const jsonString = JSON.stringify(payload, null, 4);
-  const headers = makeHeaders(jsonString);
+// ======================
+//        ROUTES
+// ======================
 
-  // Set headers and return the response
-  // Hono's `c` (Context) object works much like a Worker's `fetch` environment
-  return new Response(jsonString, { status: 200, headers });
+fastify.get('/getcect', (req, reply) => sendPayload(reply, payloadadmiral));
+fastify.get('/getect', (req, reply) => sendPayload(reply, payloadadmiral));
+fastify.get('/getct',  (req, reply) => sendPayload(reply, payloadash));
+fastify.get('/tna',    (req, reply) => {
+  const json = JSON.stringify(payloadtna, null, 4);
+  reply.headers(makeHeaders(json)).send(json);
+});
+fastify.get('/tnv',    (req, reply) => sendPayload(reply, payloadtnv));
+
+// 404
+fastify.setNotFoundHandler((req, reply) => {
+  reply.code(404).send({ error: "Not found" });
 });
 
-// 5. Export the default handler for Vercel
-export default app;
+// ======================
+//   EXPORT HANDLER FOR VERCEL
+// ======================
+
+const handler = fastifyServerless(fastify);
+
+export default handler;
